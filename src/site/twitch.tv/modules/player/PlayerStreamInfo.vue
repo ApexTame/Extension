@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { useMutationObserver } from "@vueuse/core";
 import { HookedInstance } from "@/common/ReactHooks";
 import { definePropertyHook, unsetPropertyHook } from "@/common/Reflection";
 import { useTooltip } from "@/composable/useTooltip";
@@ -45,6 +46,8 @@ const videoStats = reactive({
 
 // Container element for the video stats hoverable icon
 const container = document.createElement("seventv-container");
+const liveTimeSelector = "span.live-time";
+let liveTime: Element | null = null;
 
 const videoStatsRef = ref();
 const videoStatsTooltip = useTooltip(PlayerStatsTooltip, videoStats);
@@ -55,14 +58,35 @@ function openStatsOverlay() {
 	controls.setStatsOverlay(isOpen ? 0 : 1);
 }
 
-function remount() {
-	const sibling = document.querySelector<HTMLElement>("span.live-time")?.parentElement;
-	if (!sibling || sibling.parentElement?.contains(container)) return;
-
-	sibling.insertAdjacentElement("afterend", container);
+function mountBesideLiveTime() {
+	liveTime = document.querySelector(liveTimeSelector);
+	const sibling = liveTime?.parentElement;
+	if (!sibling) {
+		container.remove();
+	} else if (sibling.nextElementSibling !== container) {
+		sibling.after(container);
+	}
 }
 
-defineExpose({ remount });
+useMutationObserver(
+	document.body,
+	(records) => {
+		if (liveTime?.isConnected && liveTime.parentElement?.nextElementSibling === container) return;
+		if (
+			liveTime ||
+			records.some(({ addedNodes }) =>
+				Array.from(addedNodes).some(
+					(node) =>
+						node instanceof Element &&
+						(node.matches(liveTimeSelector) || node.querySelector(liveTimeSelector)),
+				),
+			)
+		) {
+			mountBesideLiveTime();
+		}
+	},
+	{ childList: true, subtree: true },
+);
 
 watch(
 	latency,
@@ -82,24 +106,20 @@ watch(
 
 watch(
 	() => props.mediaPlayer,
-	(mediaPlayer, old) => {
-		if (old && mediaPlayer !== old) {
-			unsetPropertyHook(old.playerInstance.core.state, "liveLatency");
-		} else {
-			if (!mediaPlayer) return;
-			definePropertyHook(mediaPlayer.playerInstance.core.state, "liveLatency", {
-				value: (v: number) => {
-					latency.value = v?.toFixed(2) ?? "-.--";
-				},
-			});
-		}
+	(mediaPlayer, _, onCleanup) => {
+		if (!mediaPlayer) return;
+		const state = mediaPlayer.playerInstance.core.state;
+		definePropertyHook(state, "liveLatency", {
+			value: (v: number) => {
+				latency.value = v?.toFixed(2) ?? "-.--";
+			},
+		});
+		onCleanup(() => unsetPropertyHook(state, "liveLatency"));
 	},
 	{ immediate: true },
 );
 
-onMounted(() => {
-	remount();
-});
+onMounted(mountBesideLiveTime);
 
 onUnmounted(() => {
 	container.remove();

@@ -6,7 +6,6 @@
 	<template v-if="playerAdvancedOptionsComponent.instances.length > 0">
 		<PlayerStreamInfo
 			v-if="shouldShowVideoStats"
-			ref="info"
 			:advanced-controls="playerAdvancedOptionsComponent.instances[0]"
 			:media-player="mediaPlayer"
 		/>
@@ -14,11 +13,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useComponentHook } from "@/common/ReactHooks";
 import { declareModule } from "@/composable/useModule";
 import { declareConfig, useConfig } from "@/composable/useSettings";
 import PlayerController from "./PlayerController.vue";
-import { ref } from "vue";
 import PlayerStreamInfo from "./PlayerStreamInfo.vue";
 
 declareModule<"TWITCH">("player", {
@@ -29,7 +28,6 @@ declareModule<"TWITCH">("player", {
 const mediaPlayer = ref<Twitch.MediaPlayerInstance>();
 
 const shouldShowVideoStats = useConfig<boolean>("player.video_stats");
-const info = ref<typeof PlayerStreamInfo | null>(null);
 
 const player = useComponentHook<Twitch.VideoPlayerComponent>(
 	{
@@ -40,7 +38,6 @@ const player = useComponentHook<Twitch.VideoPlayerComponent>(
 		hooks: {
 			render(inst, cur) {
 				mediaPlayer.value = inst.component.props.mediaPlayerInstance;
-				info.value?.remount?.();
 
 				return cur;
 			},

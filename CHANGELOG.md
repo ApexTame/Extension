@@ -1,11 +1,15 @@
-## 3.1.27
+## 3.1.28
 
 -   Added Volume on Scroll for Twitch and Kick with an adjustable volume step
+-   Fixed Twitch Video Stats sometimes missing after refreshing the page
+
+## 3.1.27
+
 -   Fixed Kick chat rendering, replies and links<br><i>Moving to our new extension is recommended: <a href="https://chromewebstore.google.com/detail/7tv/lppmekppnliemjclknbagdhoocikieoi" target="_blank">Chrome</a> / <a href="https://addons.mozilla.org/en-GB/firefox/addon/7tv-new/" target="_blank">Firefox</a></i>
 
 ## 3.1.26
 
-- Added subscription migration check
+-   Added subscription migration check
 
 ## 3.1.25
 
