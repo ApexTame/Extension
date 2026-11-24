@@ -80,13 +80,11 @@ watch(
 		function onWheel(event: WheelEvent) {
 			if (
 				event.defaultPrevented ||
-				!event.cancelable ||
 				event.ctrlKey ||
 				event.metaKey ||
 				event.shiftKey ||
 				!Number.isFinite(event.deltaY) ||
 				!event.deltaY ||
-				Math.abs(event.deltaY) <= Math.abs(event.deltaX) ||
 				!(event.target instanceof Element) ||
 				event.target.closest("input, select, textarea, [role=slider], [role=menu], [role=dialog]")
 			) {
@@ -108,10 +106,12 @@ watch(
 				active = { host, video, player };
 				distance = 0;
 			}
+			if (event.cancelable) event.preventDefault();
+			event.stopImmediatePropagation();
+
 			const volume = pendingVolume ?? active.player.getVolume();
 			if (!Number.isFinite(volume)) return;
 
-			event.preventDefault();
 			lastWheelAt = now;
 			window.clearTimeout(hideTimer);
 			hideTimer = window.setTimeout(() => {
@@ -137,9 +137,9 @@ watch(
 			if (!frame) frame = window.requestAnimationFrame(applyVolume);
 		}
 
-		window.addEventListener("wheel", onWheel, { passive: false });
+		window.addEventListener("wheel", onWheel, { capture: true, passive: false });
 		onCleanup(() => {
-			window.removeEventListener("wheel", onWheel);
+			window.removeEventListener("wheel", onWheel, true);
 			window.cancelAnimationFrame(frame);
 			window.clearTimeout(hideTimer);
 			visible.value = false;
