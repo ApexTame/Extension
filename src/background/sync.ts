@@ -1,4 +1,5 @@
 import { db } from "@/db/idb";
+import { sendTabMessage } from "./messaging";
 import { liveQuery } from "dexie";
 
 const settings = [] as SevenTV.Setting<SevenTV.SettingType>[];
@@ -26,10 +27,7 @@ chrome.tabs.onUpdated.addListener((id, i) => {
 	setTimeout(() => {
 		if (typeof id !== "number") return;
 
-		chrome.tabs.sendMessage(id, {
-			type: "settings-sync",
-			data: { settings },
-		});
+		sendTabMessage(id, "settings-sync", { settings });
 	}, 5000);
 });
 

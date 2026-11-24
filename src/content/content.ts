@@ -96,13 +96,14 @@ const inject = () => {
 		}
 	});
 
-	chrome.runtime.onMessage.addListener((msg) => {
+	chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
 		switch (msg.type) {
 			case "update-ready": {
 				bc.postMessage({
 					type: "seventv-update-ready",
 					data: { version: msg.data.version ?? "" },
 				});
+				reply();
 				break;
 			}
 			case "settings-sync": {
@@ -110,6 +111,7 @@ const inject = () => {
 					type: "seventv-settings-sync",
 					data: { nodes: msg.data.settings ?? [] },
 				});
+				reply();
 				break;
 			}
 		}

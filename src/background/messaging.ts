@@ -1,4 +1,4 @@
-// Handle messaging from downstream
+import { log } from "@/common/Logger";
 
 let shouldReloadOnUpdate = false;
 
@@ -9,13 +9,6 @@ chrome.runtime.onMessage.addListener((msg, _, reply) => {
 
 			chrome.permissions.request({ origins, permissions }, (granted) => {
 				reply({ granted, id });
-
-				if (!granted) return;
-
-				chrome.runtime.sendMessage({
-					type: "permission-granted",
-					data: { id },
-				});
 			});
 			break;
 		}
@@ -71,7 +64,17 @@ function broadcastMessage(type: string, data: unknown): void {
 		tabs.forEach((tab) => {
 			if (!tab.id) return;
 
-			chrome.tabs.sendMessage(tab.id, { type, data });
+			sendTabMessage(tab.id, type, data);
 		});
+	});
+}
+
+export function sendTabMessage(tabId: number, type: string, data: unknown): void {
+	chrome.tabs.sendMessage(tabId, { type, data }, () => {
+		const error = chrome.runtime.lastError;
+		// A tab may have no content script or may have navigated since it was selected.
+		if (error && error.message !== "Could not establish connection. Receiving end does not exist.") {
+			log.debug("<Messaging>", type, error.message ?? "Could not send tab message");
+		}
 	});
 }
