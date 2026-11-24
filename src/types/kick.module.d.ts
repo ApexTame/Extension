@@ -3,6 +3,7 @@ import ChatInputModuleVue from "@/site/kick.com/modules/chat-input/ChatInputModu
 import ChatModuleVue from "@/site/kick.com/modules/chat/ChatModule.vue";
 import EmoteMenuModuleVue from "@/site/kick.com/modules/emote-menu/EmoteMenuModule.vue";
 import SettingsModuleVue from "@/site/kick.com/modules/settings/SettingsModule.vue";
+import type VolumeOnScrollModule from "@/site/kick.com/modules/volume-on-scroll/VolumeOnScrollModule.vue";
 
 declare type KickModuleID = keyof KickModuleComponentMap;
 
@@ -12,4 +13,5 @@ declare type KickModuleComponentMap = {
 	settings: typeof SettingsModuleVue;
 	"chat-input": typeof ChatInputModuleVue;
 	"emote-menu": typeof EmoteMenuModuleVue;
+	"volume-on-scroll": typeof VolumeOnScrollModule;
 };

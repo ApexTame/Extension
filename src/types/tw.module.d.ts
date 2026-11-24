@@ -10,6 +10,7 @@ import type ModLogsModule from "@/site/twitch.tv/modules/mod-logs/ModLogsModule.
 import type PlayerModule from "@/site/twitch.tv/modules/player/PlayerModule.vue";
 import type SettingsModuleVue from "@/site/twitch.tv/modules/settings/SettingsModule.vue";
 import type SidebarPreviewsModuleVue from "@/site/twitch.tv/modules/sidebar-previews/SidebarPreviewsModule.vue";
+import type VolumeOnScrollModule from "@/site/twitch.tv/modules/volume-on-scroll/VolumeOnScrollModule.vue";
 
 declare type TwModuleID = keyof TwModuleComponentMap;
 
@@ -21,6 +22,7 @@ declare type TwModuleComponentMap = {
 	"hidden-elements": typeof HiddenElementsModuleVue;
 	"mod-logs": typeof ModLogsModule;
 	"sidebar-previews": typeof SidebarPreviewsModuleVue;
+	"volume-on-scroll": typeof VolumeOnScrollModule;
 	autoclaim: typeof AutoclaimModuleVue;
 	avatars: typeof AvatarsModuleVue;
 	chat: typeof ChatModuleVue;
