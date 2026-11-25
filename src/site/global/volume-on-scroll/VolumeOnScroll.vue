@@ -27,6 +27,7 @@ export const config = [
 	declareConfig<number>(stepKey, "SLIDER", {
 		path: settingsPath,
 		label: "Player Volume Step",
+		hint: "Sets how much the player volume changes per wheel input.",
 		defaultValue: defaultStep,
 		options: { min: 1, max: 10, step: 1, unit: "%" },
 	}),
